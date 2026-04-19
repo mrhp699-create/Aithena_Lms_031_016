@@ -1,4 +1,4 @@
-# Aithena Ai LMS - LMS With Ai Course Recommendation
+# Aithena Ai CRS - LMS With Ai Course Recommendation
 
 A comprehensive, production-ready AI  (LMS) built with the MERN stack. Features role-based access control, interactive courses, assignments, quizzes with auto-grading, and text-to-speech functionality, An Ai Based Course recommendation
 
