@@ -2,7 +2,7 @@
 
 A comprehensive, production-ready AI  (LMS) built with the MERN stack. Features role-based access control, interactive courses, assignments, quizzes with auto-grading, and text-to-speech functionality, Ab]d Ai Based Course recommendation
 
-![Aithena LMS](https://via.placeholder.com/800x400/3b82f6/ffffff?text=Aithena+LMS)
+
 
 ## 🚀 Features
 
