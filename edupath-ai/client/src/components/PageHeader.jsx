@@ -1,0 +1,2 @@
+const PageHeader = ({ eyebrow, title, text, action }) => <div className="mb-8 flex flex-col justify-between gap-4 lg:flex-row lg:items-end"><div><p className="text-sm font-black uppercase tracking-[.35em] text-cyan-300">{eyebrow}</p><h1 className="mt-3 text-4xl font-black tracking-tight md:text-5xl">{title}</h1>{text && <p className="mt-4 max-w-3xl text-slate-300">{text}</p>}</div>{action}</div>;
+export default PageHeader;

@@ -1,0 +1,6 @@
+import { useEffect, useState } from 'react';
+import PageHeader from '../components/PageHeader';
+import LoadingSpinner from '../components/LoadingSpinner';
+import api from '../services/api';
+const LearningPathPage = () => { const [data,setData]=useState(null); useEffect(()=>{api.get('/recommendations/learning-path').then(r=>setData(r.data));},[]); if(!data)return <LoadingSpinner/>; return <div className="page"><div className="section max-w-5xl"><PageHeader eyebrow="Learning Path" title={`Roadmap for ${data.careerGoal}`} text={`Built for your ${data.weeklyStudyTime} hours/week study rhythm.`}/><div className="relative border-l border-cyan-300/30 pl-8">{data.path.map(step=><div key={step.step} className="mb-8"><div className="absolute -left-5 grid h-10 w-10 place-items-center rounded-full bg-cyan-300 font-black text-slate-950">{step.step}</div><div className="glass rounded-3xl p-6"><span className="chip">{step.matchPercentage}% match</span><h3 className="mt-3 text-2xl font-black">{step.course.title}</h3><p className="mt-2 text-slate-300">{step.focus}</p><p className="mt-3 text-sm text-cyan-200">Next: {step.nextStepSuggestion}</p></div></div>)}</div></div></div> };
+export default LearningPathPage;

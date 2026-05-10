@@ -45,6 +45,16 @@
   50% { transform: translateY(-5px); }
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-18px) rotate(4deg); }
+}
+
+@keyframes fadeUp {
+  0% { opacity: 0; transform: translateY(24px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -54,7 +64,7 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     line-height: 1.6;
     color: #1e293b;
-    background-color: #ffffff;
+    background-color: #020617;
   }
 }
 
@@ -95,5 +105,21 @@
 
   .glass-effect {
     @apply bg-white/80 backdrop-blur-md border border-white/20;
+  }
+
+  .animate-float {
+    animation: float 7s ease-in-out infinite;
+  }
+
+  .animate-float-delayed {
+    animation: float 8s ease-in-out infinite 1s;
+  }
+
+  .animate-fade-up {
+    animation: fadeUp 0.8s ease-out both;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 200ms;
   }
 }
