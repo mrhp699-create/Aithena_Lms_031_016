@@ -1,0 +1,7 @@
+import { useEffect, useState } from 'react';
+import { BookOpen, Tags, Users, Zap } from 'lucide-react';
+import PageHeader from '../components/PageHeader';
+import StatCard from '../components/StatCard';
+import api from '../services/api';
+const AdminDashboardPage = () => { const [stats,setStats]=useState(null); useEffect(()=>{api.get('/admin/stats').then(r=>setStats(r.data));},[]); return <div className="page"><div className="section"><PageHeader eyebrow="Admin Dashboard" title="Aithena AI command center" text="Monitor users, courses, categories, and recommendation-ready content."/><div className="grid gap-5 md:grid-cols-4"><StatCard icon={BookOpen} value={stats?.totalCourses||0} label="Total Courses"/><StatCard icon={Users} value={stats?.totalStudents||0} label="Students"/><StatCard icon={Tags} value={stats?.totalCategories||0} label="Categories"/><StatCard icon={Zap} value="AI" label="Engine Active"/></div><div className="mt-8 grid gap-6 lg:grid-cols-2"><div className="glass rounded-3xl p-6"><h2 className="text-2xl font-black">Most popular categories</h2>{stats?.popularCategories?.map(c=><div key={c._id} className="mt-4 flex justify-between border-b border-white/10 pb-3"><span>{c._id}</span><b>{c.count}</b></div>)}</div><div className="glass rounded-3xl p-6"><h2 className="text-2xl font-black">Recent courses</h2>{stats?.recentCourses?.map(c=><div key={c._id} className="mt-4"><b>{c.title}</b><p className="text-sm text-slate-400">{c.category} • {c.difficulty}</p></div>)}</div></div></div></div> };
+export default AdminDashboardPage;

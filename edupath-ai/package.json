@@ -1,0 +1,14 @@
+{
+  "name": "edupath-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Aithena AI - AI-Powered Personalized LMS and Course Recommendation Platform",
+  "scripts": {
+    "install-all": "npm install --prefix server && npm install --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "client": "npm run dev --prefix client",
+    "server": "npm run dev --prefix server",
+    "seed": "npm run seed --prefix server"
+  },
+  "devDependencies": { "concurrently": "^9.1.2" }
+}

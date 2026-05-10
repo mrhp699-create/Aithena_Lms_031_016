@@ -1,0 +1,9 @@
+import { useEffect, useState } from 'react';
+import CourseCard from '../components/CourseCard';
+import PageHeader from '../components/PageHeader';
+import ProgressBar from '../components/ProgressBar';
+import SkillBadge from '../components/SkillBadge';
+import LoadingSpinner from '../components/LoadingSpinner';
+import api from '../services/api';
+const SkillGapPage = () => { const [gap,setGap]=useState(null); useEffect(()=>{api.get('/recommendations/skill-gap').then(r=>setGap(r.data));},[]); if(!gap)return <LoadingSpinner/>; return <div className="page"><div className="section"><PageHeader eyebrow="Skill Gap Analysis" title={`Become a ${gap.careerGoal}`} text={`To become a ${gap.careerGoal}, strengthen the missing skills below. Aithena AI recommends focused courses next.`}/><div className="glass rounded-3xl p-6"><div className="flex justify-between"><b>Career readiness</b><b className="text-emerald-300">{gap.readiness}%</b></div><ProgressBar value={gap.readiness} className="mt-4"/><div className="mt-6 grid gap-6 md:grid-cols-3"><div><h3 className="font-black">Required skills</h3><div className="mt-3 flex flex-wrap gap-2">{gap.requiredSkills.map(s=><SkillBadge key={s}>{s}</SkillBadge>)}</div></div><div><h3 className="font-black">Already selected</h3><div className="mt-3 flex flex-wrap gap-2">{gap.currentSkills.map(s=><SkillBadge active key={s}>{s}</SkillBadge>)}</div></div><div><h3 className="font-black">Missing skills</h3><div className="mt-3 flex flex-wrap gap-2">{gap.missingSkills.map(s=><SkillBadge key={s}>{s}</SkillBadge>)}</div></div></div></div><h2 className="mt-10 text-3xl font-black">Courses to close the gap</h2><div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">{gap.recommendedCourses.map(c=><CourseCard key={c._id} course={c}/>)}</div></div></div> };
+export default SkillGapPage;

@@ -1,0 +1,6 @@
+import { Link } from 'react-router-dom';
+import { Clock, Star } from 'lucide-react';
+import GlassCard from './GlassCard';
+import SkillBadge from './SkillBadge';
+const CourseCard = ({ course, match }) => <GlassCard className="card-hover overflow-hidden"><img src={course.image} alt={course.title} className="h-44 w-full object-cover"/><div className="p-5"><div className="flex flex-wrap items-center justify-between gap-2"><span className="chip text-cyan-100">{course.category}</span><span className="chip">{course.difficulty}</span></div><h3 className="mt-4 text-xl font-black">{course.title}</h3><p className="mt-2 line-clamp-2 text-sm text-slate-300">{course.description}</p><div className="mt-4 flex items-center gap-4 text-sm text-slate-300"><span className="flex items-center gap-1"><Star size={16} className="text-amber-300"/> {course.rating}</span><span className="flex items-center gap-1"><Clock size={16}/> {course.duration}</span>{match && <span className="font-black text-emerald-300">{match}% match</span>}</div><div className="mt-4 flex flex-wrap gap-2">{course.skills?.slice(0,3).map(skill => <SkillBadge key={skill}>{skill}</SkillBadge>)}</div><Link to={`/courses/${course._id || course.slug}`} className="btn btn-primary mt-5 w-full">View details</Link></div></GlassCard>;
+export default CourseCard;
