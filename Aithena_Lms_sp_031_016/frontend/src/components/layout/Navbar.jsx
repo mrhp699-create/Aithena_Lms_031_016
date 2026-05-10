@@ -1,7 +1,14 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { BookOpenIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, CpuChipIcon, SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
+
+const navLinks = [
+  { label: 'AI Advisor', href: '/#advisor' },
+  { label: 'Features', href: '/#features' },
+  { label: 'Courses', href: '/#courses' },
+  { label: 'About', href: '/#about' },
+];
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,113 +21,81 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-lg border-b border-secondary-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2">
-              <BookOpenIcon className="h-8 w-8 text-primary-600" />
-              <span className="text-xl font-bold text-gradient">Aithena LMS</span>
-            </Link>
+    <nav className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 shadow-2xl shadow-slate-950/20 backdrop-blur-2xl">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-20 items-center justify-between">
+          <Link to="/" className="group flex items-center gap-3">
+            <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-300 to-blue-600 text-slate-950 shadow-lg shadow-cyan-500/25 transition group-hover:-translate-y-0.5">
+              <CpuChipIcon className="h-7 w-7" />
+              <span className="absolute -right-1 -top-1 flex h-4 w-4 rounded-full bg-emerald-400 ring-4 ring-slate-950" />
+            </div>
+            <div>
+              <span className="block text-xl font-black tracking-tight text-white">Aithena AI</span>
+              <span className="block text-xs font-bold uppercase tracking-[0.25em] text-cyan-300">Course Portal</span>
+            </div>
+          </Link>
+
+          <div className="hidden items-center gap-8 md:flex">
+            {navLinks.map(link => (
+              <a key={link.label} href={link.href} className="text-sm font-bold text-slate-300 transition hover:text-cyan-300">
+                {link.label}
+              </a>
+            ))}
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link
-              to="/"
-              className="text-secondary-700 hover:text-primary-600 font-medium transition-colors duration-200"
-            >
-              Home
-            </Link>
-
+          <div className="hidden items-center gap-4 md:flex">
             {isAuthenticated ? (
-              <div className="flex items-center space-x-4">
-                <span className="text-secondary-600">
+              <>
+                <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200">
                   Welcome, {user?.name?.split(' ')[0]}
-                </span>
-                <button
-                  onClick={handleLogout}
-                  className="btn-secondary text-sm"
-                >
+                </div>
+                <button onClick={handleLogout} className="rounded-2xl border border-white/10 bg-white/10 px-5 py-3 text-sm font-bold text-white transition hover:bg-white/15">
                   Logout
                 </button>
-              </div>
+              </>
             ) : (
-              <div className="flex items-center space-x-4">
-                <Link
-                  to="/login"
-                  className="text-secondary-700 hover:text-primary-600 font-medium transition-colors duration-200"
-                >
+              <>
+                <Link to="/login" className="text-sm font-bold text-slate-300 transition hover:text-white">
                   Login
                 </Link>
-                <Link
-                  to="/register"
-                  className="btn-primary text-sm"
-                >
+                <Link to="/register" className="inline-flex items-center rounded-2xl bg-gradient-to-r from-cyan-300 to-blue-500 px-5 py-3 text-sm font-black text-slate-950 shadow-lg shadow-cyan-500/25 transition hover:-translate-y-0.5">
+                  <SparklesIcon className="mr-2 h-4 w-4" />
                   Get Started
                 </Link>
-              </div>
+              </>
             )}
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-secondary-700 hover:text-primary-600 p-2"
-            >
-              {isOpen ? (
-                <XMarkIcon className="h-6 w-6" />
-              ) : (
-                <Bars3Icon className="h-6 w-6" />
-              )}
-            </button>
-          </div>
+          <button onClick={() => setIsOpen(!isOpen)} className="rounded-2xl border border-white/10 bg-white/10 p-3 text-white md:hidden" aria-label="Toggle menu">
+            {isOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
+          </button>
         </div>
       </div>
 
-      {/* Mobile Navigation */}
       {isOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-secondary-50 border-t border-secondary-200">
-            <Link
-              to="/"
-              className="block px-3 py-2 text-secondary-700 hover:text-primary-600 font-medium"
-              onClick={() => setIsOpen(false)}
-            >
-              Home
-            </Link>
-
+        <div className="border-t border-white/10 bg-slate-950/95 px-4 pb-5 pt-2 backdrop-blur-2xl md:hidden">
+          <div className="space-y-2">
+            {navLinks.map(link => (
+              <a key={link.label} href={link.href} onClick={() => setIsOpen(false)} className="block rounded-2xl px-4 py-3 text-sm font-bold text-slate-200 transition hover:bg-white/10 hover:text-cyan-300">
+                {link.label}
+              </a>
+            ))}
             {isAuthenticated ? (
-              <div className="px-3 py-2 space-y-2">
-                <div className="text-secondary-600 text-sm">
-                  Welcome, {user?.name?.split(' ')[0]}
-                </div>
-                <button
-                  onClick={() => {
-                    handleLogout();
-                    setIsOpen(false);
-                  }}
-                  className="w-full btn-secondary text-sm text-left"
-                >
-                  Logout
-                </button>
-              </div>
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setIsOpen(false);
+                }}
+                className="block w-full rounded-2xl bg-white/10 px-4 py-3 text-left text-sm font-bold text-white"
+              >
+                Logout
+              </button>
             ) : (
-              <div className="px-3 py-2 space-y-2">
-                <Link
-                  to="/login"
-                  className="block px-3 py-2 text-secondary-700 hover:text-primary-600 font-medium"
-                  onClick={() => setIsOpen(false)}
-                >
+              <div className="grid gap-2 pt-2">
+                <Link to="/login" onClick={() => setIsOpen(false)} className="rounded-2xl border border-white/10 px-4 py-3 text-center text-sm font-bold text-white">
                   Login
                 </Link>
-                <Link
-                  to="/register"
-                  className="block px-3 py-2 btn-primary text-sm text-center"
-                  onClick={() => setIsOpen(false)}
-                >
+                <Link to="/register" onClick={() => setIsOpen(false)} className="rounded-2xl bg-cyan-300 px-4 py-3 text-center text-sm font-black text-slate-950">
                   Get Started
                 </Link>
               </div>
@@ -133,4 +108,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

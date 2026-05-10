@@ -1,313 +1,346 @@
-import React, { useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  BookOpenIcon,
   AcademicCapIcon,
-  ChartBarIcon,
-  MicrophoneIcon,
-  CheckCircleIcon,
-  StarIcon,
   ArrowRightIcon,
-  PlayIcon,
-  UserIcon,
-  EnvelopeIcon,
-  ChatBubbleLeftRightIcon
+  BeakerIcon,
+  BoltIcon,
+  BriefcaseIcon,
+  ChartBarIcon,
+  CheckCircleIcon,
+  ChevronRightIcon,
+  ClockIcon,
+  CodeBracketIcon,
+  CpuChipIcon,
+  CursorArrowRaysIcon,
+  LightBulbIcon,
+  PaintBrushIcon,
+  RocketLaunchIcon,
+  SparklesIcon,
+  StarIcon,
+  TrophyIcon,
+  UserGroupIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 
+const interests = [
+  { id: 'ai', label: 'AI & Machine Learning', icon: CpuChipIcon },
+  { id: 'data', label: 'Data Analytics', icon: ChartBarIcon },
+  { id: 'web', label: 'Web Development', icon: CodeBracketIcon },
+  { id: 'design', label: 'UX/UI Design', icon: PaintBrushIcon },
+  { id: 'business', label: 'Business Strategy', icon: BriefcaseIcon },
+  { id: 'cloud', label: 'Cloud & DevOps', icon: BoltIcon },
+];
+
+const courseCatalog = [
+  {
+    title: 'AI Product Builder Professional',
+    track: 'Artificial Intelligence',
+    level: 'Intermediate',
+    duration: '8 weeks',
+    matchTags: ['ai', 'business', 'web'],
+    gradient: 'from-cyan-400 via-blue-500 to-indigo-600',
+    rating: 4.9,
+    learners: '18.4k',
+    outcome: 'Design, prompt, prototype, and launch intelligent AI-powered products.',
+    modules: ['Prompt systems', 'LLM workflows', 'AI product strategy'],
+  },
+  {
+    title: 'Full Stack React Engineering',
+    track: 'Software Development',
+    level: 'Beginner to Advanced',
+    duration: '12 weeks',
+    matchTags: ['web', 'cloud', 'ai'],
+    gradient: 'from-violet-400 via-fuchsia-500 to-rose-500',
+    rating: 4.8,
+    learners: '24.1k',
+    outcome: 'Build production-grade web apps with React, APIs, dashboards, and deployment.',
+    modules: ['React systems', 'API integration', 'Cloud deployment'],
+  },
+  {
+    title: 'Data Science Career Accelerator',
+    track: 'Data & Analytics',
+    level: 'Intermediate',
+    duration: '10 weeks',
+    matchTags: ['data', 'ai', 'business'],
+    gradient: 'from-emerald-300 via-teal-500 to-cyan-600',
+    rating: 4.9,
+    learners: '31.8k',
+    outcome: 'Analyze real datasets, build predictive models, and communicate insights.',
+    modules: ['Python analytics', 'ML models', 'Executive dashboards'],
+  },
+  {
+    title: 'Premium UX Design Studio',
+    track: 'Design',
+    level: 'Beginner',
+    duration: '6 weeks',
+    matchTags: ['design', 'business', 'web'],
+    gradient: 'from-amber-300 via-orange-500 to-pink-500',
+    rating: 4.7,
+    learners: '15.6k',
+    outcome: 'Create polished interfaces, design systems, research flows, and portfolios.',
+    modules: ['Design systems', 'User research', 'Motion UI'],
+  },
+  {
+    title: 'Cloud DevOps Mastery Lab',
+    track: 'Cloud Infrastructure',
+    level: 'Advanced',
+    duration: '9 weeks',
+    matchTags: ['cloud', 'web', 'data'],
+    gradient: 'from-sky-300 via-blue-600 to-slate-900',
+    rating: 4.8,
+    learners: '12.9k',
+    outcome: 'Deploy scalable systems with CI/CD, containers, observability, and security.',
+    modules: ['Docker & CI/CD', 'Cloud architecture', 'Monitoring'],
+  },
+  {
+    title: 'Digital Business & Growth Analytics',
+    track: 'Business',
+    level: 'Beginner to Intermediate',
+    duration: '7 weeks',
+    matchTags: ['business', 'data', 'design'],
+    gradient: 'from-lime-300 via-green-500 to-emerald-700',
+    rating: 4.8,
+    learners: '21.3k',
+    outcome: 'Use analytics, market research, and experimentation to grow digital ventures.',
+    modules: ['Growth loops', 'KPI analytics', 'Go-to-market'],
+  },
+];
+
+const learningGoals = [
+  'Get job-ready skills',
+  'Build a portfolio project',
+  'Switch my career path',
+  'Improve academic performance',
+];
+
+const stats = [
+  { value: '96%', label: 'recommendation precision', icon: CursorArrowRaysIcon },
+  { value: '42k+', label: 'guided learners', icon: UserGroupIcon },
+  { value: '1.8M', label: 'skill signals analyzed', icon: SparklesIcon },
+  { value: '4.9/5', label: 'student experience', icon: StarIcon },
+];
+
+const steps = [
+  {
+    title: 'Tell us your interests',
+    copy: 'Students select passions, current skill level, time availability, and learning goals through a polished onboarding form.',
+  },
+  {
+    title: 'AI scores every pathway',
+    copy: 'The recommendation engine ranks courses by topic fit, ambition, workload, and practical career outcomes.',
+  },
+  {
+    title: 'Start a curated roadmap',
+    copy: 'Learners receive premium course cards, weekly milestones, project outcomes, and next-best recommendations.',
+  },
+];
+
+const testimonials = [
+  {
+    name: 'Ayesha Malik',
+    role: 'Computer Science Student',
+    quote: 'Aithena mapped my AI interests to a clear course roadmap and helped me choose a project-based learning path.',
+  },
+  {
+    name: 'Hamza Farooq',
+    role: 'Career Switcher',
+    quote: 'The portal feels premium and the recommendations made it obvious which course matched my time and goals.',
+  },
+  {
+    name: 'Sana Ahmed',
+    role: 'UX Learner',
+    quote: 'I loved the interactive form, animated dashboard, and detailed course match explanations.',
+  },
+];
+
+const getScore = (course, selectedInterests, level, goal) => {
+  const interestScore = course.matchTags.reduce(
+    (score, tag) => score + (selectedInterests.includes(tag) ? 32 : 0),
+    0,
+  );
+  const levelScore = course.level.toLowerCase().includes(level.toLowerCase()) ? 14 : 7;
+  const goalScore = goal.includes('portfolio') || goal.includes('job') ? 10 : 6;
+  return Math.min(99, 42 + interestScore + levelScore + goalScore);
+};
+
 const LandingPage = () => {
-  const [stats, setStats] = useState({
-    students: 12500,
-    teachers: 450,
-    courses: 320,
-    satisfaction: 98
-  });
+  const [selectedInterests, setSelectedInterests] = useState(['ai', 'web']);
+  const [level, setLevel] = useState('Beginner');
+  const [weeklyHours, setWeeklyHours] = useState(8);
+  const [goal, setGoal] = useState(learningGoals[0]);
 
-  // Animated counter effect
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setStats(prev => ({
-        students: Math.min(prev.students + Math.floor(Math.random() * 5), 15000),
-        teachers: Math.min(prev.teachers + Math.floor(Math.random() * 2), 500),
-        courses: Math.min(prev.courses + Math.floor(Math.random() * 3), 400),
-        satisfaction: Math.min(prev.satisfaction + (Math.random() > 0.7 ? 0.1 : 0), 99.9)
-      }));
-    }, 2000);
+  const recommendations = useMemo(() => {
+    return courseCatalog
+      .map(course => ({
+        ...course,
+        score: getScore(course, selectedInterests, level, goal),
+      }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+  }, [goal, level, selectedInterests]);
 
-    return () => clearInterval(interval);
-  }, []);
-
-  const features = [
-    {
-      icon: BookOpenIcon,
-      title: 'Comprehensive Course Management',
-      description: 'Create, organize, and deliver engaging courses with multimedia content, assignments, and assessments.'
-    },
-    {
-      icon: MicrophoneIcon,
-      title: 'Text-to-Speech Technology',
-      description: 'Advanced TTS functionality converts lecture content to audio, making learning accessible for all students.'
-    },
-    {
-      icon: AcademicCapIcon,
-      title: 'Interactive Learning',
-      description: 'Engage students with quizzes, assignments, and real-time progress tracking.'
-    },
-    {
-      icon: ChartBarIcon,
-      title: 'Advanced Analytics',
-      description: 'Track student performance, course completion rates, and learning outcomes with detailed insights.'
-    }
-  ];
-
-  const testimonials = [
-    {
-      name: 'Dr. Sarah Johnson',
-      role: 'Computer Science Professor',
-      content: 'Aithena LMS has transformed how I deliver my courses. The TTS feature is incredible for accessibility.',
-      rating: 5,
-      avatar: 'SJ'
-    },
-    {
-      name: 'Michael Chen',
-      role: 'Design Instructor',
-      content: 'The platform is intuitive and powerful. My students love the interactive quizzes and assignments.',
-      rating: 5,
-      avatar: 'MC'
-    },
-    {
-      name: 'Emily Rodriguez',
-      role: 'Student',
-      content: 'As someone with visual impairments, the text-to-speech feature has made learning so much easier.',
-      rating: 5,
-      avatar: 'ER'
-    }
-  ];
-
-  const teamMembers = [
-    {
-      name: 'Moaz Saeed',
-      id: 'SP23-BCS-031',
-      icon: UserIcon
-    },
-    {
-      name: 'Areeba Khan',
-      id: 'SP23-BCS-016',
-      icon: UserIcon
-    }
-  ];
+  const toggleInterest = interestId => {
+    setSelectedInterests(current => {
+      if (current.includes(interestId)) {
+        return current.length === 1 ? current : current.filter(id => id !== interestId);
+      }
+      return [...current, interestId];
+    });
+  };
 
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary-50 via-white to-secondary-50 py-20 lg:py-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-secondary-900 mb-6">
-              Revolutionize
-              <span className="text-gradient block">Education</span>
-              with Aithena LMS
+    <div className="min-h-screen overflow-hidden bg-slate-950 text-white">
+      <section className="relative isolate px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.22),transparent_35%),radial-gradient(circle_at_80%_20%,rgba(168,85,247,0.22),transparent_32%),linear-gradient(180deg,#020617_0%,#0f172a_55%,#111827_100%)]" />
+        <div className="absolute left-1/2 top-24 -z-10 h-72 w-72 -translate-x-1/2 rounded-full bg-cyan-400/20 blur-3xl animate-pulse" />
+        <div className="absolute right-6 top-40 hidden h-28 w-28 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl lg:block animate-float" />
+        <div className="absolute bottom-20 left-10 hidden h-20 w-20 rounded-3xl border border-cyan-300/20 bg-cyan-300/10 lg:block animate-float-delayed" />
+
+        <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.02fr_0.98fr]">
+          <div className="animate-fade-up">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-300/30 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100 shadow-2xl shadow-cyan-950/50 backdrop-blur-xl">
+              <SparklesIcon className="h-5 w-5 text-cyan-300" />
+              AI Course Recommendation Portal
+            </div>
+            <h1 className="max-w-5xl text-5xl font-black tracking-tight text-white sm:text-6xl lg:text-7xl">
+              Discover the perfect course with a premium{' '}
+              <span className="bg-gradient-to-r from-cyan-300 via-blue-300 to-fuchsia-300 bg-clip-text text-transparent">
+                AI learning advisor.
+              </span>
             </h1>
-            <p className="text-xl md:text-2xl text-secondary-600 mb-8 max-w-3xl mx-auto">
-              The most advanced learning management system designed for modern education.
-              Create engaging courses, track progress, and deliver exceptional learning experiences.
+            <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">
+              Aithena turns student interests, goals, time, and skill level into intelligent course recommendations with a cinematic interface designed for modern learners.
             </p>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Link
-                to="/register"
-                className="btn-primary text-lg px-8 py-4 flex items-center justify-center group"
-              >
-                Get Started Free
-                <ArrowRightIcon className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+            <div className="mt-9 flex flex-col gap-4 sm:flex-row">
+              <a href="#advisor" className="group inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-600 px-7 py-4 text-base font-bold text-slate-950 shadow-2xl shadow-cyan-500/25 transition duration-300 hover:-translate-y-1 hover:shadow-cyan-400/40">
+                Try AI Advisor
+                <ArrowRightIcon className="ml-2 h-5 w-5 transition group-hover:translate-x-1" />
+              </a>
+              <Link to="/register" className="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/10 px-7 py-4 text-base font-bold text-white backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:bg-white/15">
+                Create learner profile
               </Link>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link
-                  to="/login"
-                  className="btn-outline text-lg px-8 py-4"
-                >
-                  Login as Student
-                </Link>
-                <Link
-                  to="/login"
-                  className="btn-secondary text-lg px-8 py-4"
-                >
-                  Login as Teacher
-                </Link>
-              </div>
             </div>
 
-            {/* Demo Video Placeholder */}
-            <div className="relative max-w-4xl mx-auto">
-              <div className="aspect-video bg-secondary-200 rounded-xl shadow-2xl overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-primary-100 to-secondary-100 flex items-center justify-center">
-                  <div className="text-center">
-                    <PlayIcon className="h-24 w-24 text-primary-600 mx-auto mb-4 opacity-50" />
-                    <p className="text-secondary-600 text-lg">Platform Demo Video</p>
-                  </div>
+            <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              {stats.map(item => (
+                <div key={item.label} className="rounded-3xl border border-white/10 bg-white/[0.06] p-4 backdrop-blur-xl">
+                  <item.icon className="mb-3 h-6 w-6 text-cyan-300" />
+                  <div className="text-2xl font-black text-white">{item.value}</div>
+                  <div className="mt-1 text-xs font-medium uppercase tracking-wide text-slate-400">{item.label}</div>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-primary-600 mb-2">
-                {stats.students.toLocaleString()}+
-              </div>
-              <div className="text-secondary-600 font-medium">Active Students</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-primary-600 mb-2">
-                {stats.teachers}+
-              </div>
-              <div className="text-secondary-600 font-medium">Expert Teachers</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-primary-600 mb-2">
-                {stats.courses}+
-              </div>
-              <div className="text-secondary-600 font-medium">Courses Available</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-primary-600 mb-2">
-                {stats.satisfaction.toFixed(1)}%
-              </div>
-              <div className="text-secondary-600 font-medium">Satisfaction Rate</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section id="features" className="py-20 bg-secondary-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-4">
-              Powerful Features for Modern Education
-            </h2>
-            <p className="text-xl text-secondary-600 max-w-2xl mx-auto">
-              Everything you need to create, manage, and deliver exceptional learning experiences.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {features.map((feature, index) => (
-              <div key={index} className="card p-8">
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0">
-                    <feature.icon className="h-12 w-12 text-primary-600" />
-                  </div>
+          <div className="relative animate-fade-up animation-delay-200" id="advisor">
+            <div className="absolute -inset-1 rounded-[2rem] bg-gradient-to-r from-cyan-400 via-blue-500 to-fuchsia-500 opacity-60 blur-2xl" />
+            <div className="relative rounded-[2rem] border border-white/15 bg-white/[0.08] p-4 shadow-2xl shadow-black/40 backdrop-blur-2xl sm:p-6">
+              <div className="rounded-[1.5rem] border border-white/10 bg-slate-950/80 p-5 sm:p-6">
+                <div className="flex items-center justify-between gap-4">
                   <div>
-                    <h3 className="text-xl font-semibold text-secondary-900 mb-3">
-                      {feature.title}
-                    </h3>
-                    <p className="text-secondary-600 leading-relaxed">
-                      {feature.description}
-                    </p>
+                    <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">Live matching</p>
+                    <h2 className="mt-2 text-2xl font-black">Student Interest Form</h2>
                   </div>
+                  <div className="rounded-2xl bg-emerald-400/10 px-3 py-2 text-sm font-bold text-emerald-300 ring-1 ring-emerald-300/20">AI Online</div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* How It Works Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-4">
-              How It Works
-            </h2>
-            <p className="text-xl text-secondary-600 max-w-2xl mx-auto">
-              Simple steps to transform your teaching and learning experience.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-primary-600">1</span>
-              </div>
-              <h3 className="text-xl font-semibold text-secondary-900 mb-3">
-                Create Your Course
-              </h3>
-              <p className="text-secondary-600">
-                Teachers can easily create courses with lectures, assignments, and quizzes using our intuitive interface.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-primary-600">2</span>
-              </div>
-              <h3 className="text-xl font-semibold text-secondary-900 mb-3">
-                Engage Students
-              </h3>
-              <p className="text-secondary-600">
-                Students enroll in courses and access content with features like text-to-speech and interactive assessments.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-primary-600">3</span>
-              </div>
-              <h3 className="text-xl font-semibold text-secondary-900 mb-3">
-                Track Progress
-              </h3>
-              <p className="text-secondary-600">
-                Monitor student performance with detailed analytics and provide personalized feedback.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-20 bg-secondary-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-4">
-              What Our Users Say
-            </h2>
-            <p className="text-xl text-secondary-600 max-w-2xl mx-auto">
-              Join thousands of educators and learners who trust Aithena LMS.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="card p-6">
-                <div className="flex items-center mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <StarIconSolid key={i} className="h-5 w-5 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-secondary-700 mb-6 italic">
-                  "{testimonial.content}"
-                </p>
-                <div className="flex items-center">
-                  <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-primary-600 font-semibold">
-                      {testimonial.avatar}
-                    </span>
-                  </div>
+                <div className="mt-6 space-y-6">
                   <div>
-                    <div className="font-semibold text-secondary-900">
-                      {testimonial.name}
-                    </div>
-                    <div className="text-sm text-secondary-600">
-                      {testimonial.role}
+                    <label className="text-sm font-bold text-slate-200">Choose interests</label>
+                    <div className="mt-3 grid grid-cols-2 gap-3">
+                      {interests.map(item => {
+                        const active = selectedInterests.includes(item.id);
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => toggleInterest(item.id)}
+                            className={`group rounded-2xl border p-3 text-left transition duration-300 hover:-translate-y-1 ${
+                              active
+                                ? 'border-cyan-300/60 bg-cyan-300/15 shadow-lg shadow-cyan-950/40'
+                                : 'border-white/10 bg-white/[0.04] hover:border-white/25 hover:bg-white/[0.08]'
+                            }`}
+                          >
+                            <item.icon className={`mb-2 h-6 w-6 ${active ? 'text-cyan-300' : 'text-slate-400 group-hover:text-white'}`} />
+                            <span className="text-sm font-semibold text-white">{item.label}</span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="text-sm font-bold text-slate-200" htmlFor="level">Current level</label>
+                      <select id="level" value={level} onChange={event => setLevel(event.target.value)} className="mt-2 w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-white outline-none ring-cyan-300/30 transition focus:ring-4">
+                        <option className="bg-slate-900">Beginner</option>
+                        <option className="bg-slate-900">Intermediate</option>
+                        <option className="bg-slate-900">Advanced</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-sm font-bold text-slate-200" htmlFor="hours">Weekly hours: {weeklyHours}</label>
+                      <input id="hours" type="range" min="3" max="20" value={weeklyHours} onChange={event => setWeeklyHours(event.target.value)} className="mt-5 w-full accent-cyan-300" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-bold text-slate-200" htmlFor="goal">Learning goal</label>
+                    <select id="goal" value={goal} onChange={event => setGoal(event.target.value)} className="mt-2 w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-white outline-none ring-cyan-300/30 transition focus:ring-4">
+                      {learningGoals.map(item => (
+                        <option key={item} className="bg-slate-900">{item}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 space-y-3">
+                {recommendations.map((course, index) => (
+                  <div key={course.title} className="group rounded-[1.35rem] border border-white/10 bg-white/[0.07] p-4 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:bg-white/[0.1]">
+                    <div className="flex items-start gap-4">
+                      <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${course.gradient} text-lg font-black text-white shadow-lg`}>
+                        {index + 1}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-3">
+                          <h3 className="font-black text-white">{course.title}</h3>
+                          <span className="rounded-full bg-cyan-300/15 px-3 py-1 text-sm font-black text-cyan-200">{course.score}%</span>
+                        </div>
+                        <p className="mt-1 text-sm text-slate-300">{course.outcome}</p>
+                        <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-slate-300">
+                          <span className="rounded-full bg-white/10 px-2.5 py-1">{course.track}</span>
+                          <span className="rounded-full bg-white/10 px-2.5 py-1">{course.duration}</span>
+                          <span className="rounded-full bg-white/10 px-2.5 py-1">{weeklyHours} hrs/week plan</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" className="relative bg-slate-50 px-4 py-24 text-slate-950 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-sm font-black uppercase tracking-[0.35em] text-blue-600">Recommendation intelligence</p>
+            <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">Built like a premium AI counseling desk.</h2>
+            <p className="mt-5 text-lg leading-8 text-slate-600">The portal combines elegant UX with practical decision logic so students understand why every course is recommended.</p>
+          </div>
+
+          <div className="mt-16 grid gap-6 lg:grid-cols-3">
+            {steps.map((step, index) => (
+              <div key={step.title} className="group rounded-[2rem] border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/70 transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
+                <div className="mb-8 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-xl font-black text-white shadow-lg shadow-slate-400/40">0{index + 1}</div>
+                <h3 className="text-2xl font-black">{step.title}</h3>
+                <p className="mt-4 leading-7 text-slate-600">{step.copy}</p>
+                <div className="mt-8 inline-flex items-center text-sm font-black text-blue-600">
+                  Explore flow <ChevronRightIcon className="ml-1 h-4 w-4 transition group-hover:translate-x-1" />
                 </div>
               </div>
             ))}
@@ -315,61 +348,108 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Team Members Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-4">
-              Meet Our Team
-            </h2>
-            <p className="text-xl text-secondary-600 max-w-2xl mx-auto">
-              The passionate developers behind Aithena LMS.
-            </p>
+      <section id="courses" className="bg-white px-4 py-24 text-slate-950 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+            <div className="max-w-3xl">
+              <p className="text-sm font-black uppercase tracking-[0.35em] text-fuchsia-600">Curated pathways</p>
+              <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">High-impact courses matched to student intent.</h2>
+            </div>
+            <Link to="/register" className="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-6 py-4 font-bold text-white transition hover:-translate-y-1 hover:bg-blue-700">
+              Build my roadmap <ArrowRightIcon className="ml-2 h-5 w-5" />
+            </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {teamMembers.map((member, index) => (
-              <div key={index} className="card p-8 hover:shadow-lg transition-shadow duration-300">
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <member.icon className="h-10 w-10 text-primary-600" />
+          <div className="mt-12 grid gap-6 lg:grid-cols-3">
+            {courseCatalog.slice(0, 6).map(course => (
+              <article key={course.title} className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl shadow-slate-200/70 transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
+                <div className={`h-3 bg-gradient-to-r ${course.gradient}`} />
+                <div className="p-7">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black uppercase tracking-wide text-slate-600">{course.track}</span>
+                    <span className="inline-flex items-center gap-1 text-sm font-bold text-amber-500"><StarIconSolid className="h-4 w-4" /> {course.rating}</span>
                   </div>
-                  <h3 className="text-xl font-semibold text-secondary-900 mb-2">
-                    {member.name}
-                  </h3>
-                  <p className="text-secondary-600 mb-6">
-                    {member.id}
-                  </p>
-                  <div className="flex justify-center space-x-4">
-                    <EnvelopeIcon className="h-6 w-6 text-primary-600 hover:text-primary-700 cursor-pointer transition-colors" />
-                    <ChatBubbleLeftRightIcon className="h-6 w-6 text-primary-600 hover:text-primary-700 cursor-pointer transition-colors" />
-                    <div className="h-6 w-6 bg-primary-600 hover:bg-primary-700 rounded cursor-pointer transition-colors flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">in</span>
-                    </div>
+                  <h3 className="mt-5 text-2xl font-black leading-tight">{course.title}</h3>
+                  <p className="mt-3 leading-7 text-slate-600">{course.outcome}</p>
+                  <div className="mt-6 flex items-center gap-4 text-sm font-semibold text-slate-500">
+                    <span className="inline-flex items-center gap-1"><ClockIcon className="h-4 w-4" /> {course.duration}</span>
+                    <span className="inline-flex items-center gap-1"><AcademicCapIcon className="h-4 w-4" /> {course.learners}</span>
+                  </div>
+                  <div className="mt-6 space-y-2">
+                    {course.modules.map(module => (
+                      <div key={module} className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+                        <CheckCircleIcon className="h-5 w-5 text-emerald-500" />
+                        {module}
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-primary-600">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Ready to Transform Education?
-          </h2>
-          <p className="text-xl text-primary-100 mb-8">
-            Join Aithena LMS today and experience the future of learning management.
-          </p>
-          <Link
-            to="/register"
-            className="inline-flex items-center bg-white text-primary-600 font-semibold px-8 py-4 rounded-lg hover:bg-secondary-50 transition-colors duration-200 group"
-          >
-            Start Your Free Trial
-            <ArrowRightIcon className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-          </Link>
+      <section id="about" className="relative bg-slate-950 px-4 py-24 text-white sm:px-6 lg:px-8">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.18),transparent_35%)]" />
+        <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+          <div>
+            <p className="text-sm font-black uppercase tracking-[0.35em] text-cyan-300">Premium student experience</p>
+            <h2 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">A smarter portal for confident course decisions.</h2>
+            <p className="mt-6 text-lg leading-8 text-slate-300">Aithena is redesigned as an AI-first course recommendation portal with modern animations, glassmorphism, responsive layouts, and recommendation cards that make learning choices clear.</p>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              {['Personalized course ranking', 'Skill-level aware roadmap', 'Career outcome matching', 'Premium animated dashboard'].map(item => (
+                <div key={item} className="rounded-2xl border border-white/10 bg-white/[0.06] p-4 font-bold text-slate-100 backdrop-blur-xl">
+                  <CheckCircleIcon className="mb-3 h-6 w-6 text-cyan-300" />
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-[2rem] border border-white/10 bg-white/[0.06] p-6 shadow-2xl backdrop-blur-xl">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {testimonials.map(testimonial => (
+                <div key={testimonial.name} className="rounded-3xl bg-white p-6 text-slate-950 shadow-xl first:sm:col-span-2">
+                  <div className="flex gap-1 text-amber-400">
+                    {[1, 2, 3, 4, 5].map(star => <StarIconSolid key={star} className="h-5 w-5" />)}
+                  </div>
+                  <p className="mt-4 leading-7 text-slate-600">“{testimonial.quote}”</p>
+                  <div className="mt-5 font-black">{testimonial.name}</div>
+                  <div className="text-sm font-semibold text-slate-500">{testimonial.role}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" className="bg-gradient-to-br from-cyan-50 via-white to-fuchsia-50 px-4 py-24 text-slate-950 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-5xl overflow-hidden rounded-[2.5rem] bg-slate-950 p-8 text-center text-white shadow-2xl shadow-slate-300/80 sm:p-12">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-cyan-300 text-slate-950">
+            <RocketLaunchIcon className="h-9 w-9" />
+          </div>
+          <h2 className="mt-6 text-4xl font-black tracking-tight sm:text-5xl">Ready to recommend the right course?</h2>
+          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-300">Launch a student profile, capture interests, and let Aithena generate a focused learning path with premium UX.</p>
+          <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
+            <a href="#advisor" className="inline-flex items-center justify-center rounded-2xl bg-cyan-300 px-7 py-4 font-black text-slate-950 transition hover:-translate-y-1 hover:bg-cyan-200">
+              Open AI advisor <SparklesIcon className="ml-2 h-5 w-5" />
+            </a>
+            <Link to="/login" className="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/10 px-7 py-4 font-black text-white transition hover:-translate-y-1 hover:bg-white/15">
+              Login to portal
+            </Link>
+          </div>
+          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            {[
+              { icon: TrophyIcon, label: 'Outcome-led recommendations' },
+              { icon: LightBulbIcon, label: 'Student interest mapping' },
+              { icon: BeakerIcon, label: 'AI-powered exploration' },
+            ].map(item => (
+              <div key={item.label} className="rounded-2xl border border-white/10 bg-white/[0.06] p-4 text-sm font-bold text-slate-200">
+                <item.icon className="mx-auto mb-2 h-6 w-6 text-cyan-300" />
+                {item.label}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </div>
@@ -377,4 +457,3 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
-
