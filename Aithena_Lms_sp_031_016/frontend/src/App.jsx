@@ -76,7 +76,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-secondary-50">
+        <div className="min-h-screen bg-slate-950">
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={
